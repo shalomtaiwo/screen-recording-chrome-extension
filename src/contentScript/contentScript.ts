@@ -49,43 +49,41 @@ chrome.runtime.sendMessage({ action: "updateAudioPreference", enableAudio });
 const enableWebcam = true;
 chrome.runtime.sendMessage({ action: "updateWebcamPreference", enableWebcam });
 
-const getDataFromLink = async (chunks) => {
-	let netg = [];
+// const getDataFromLink = async (chunks) => {
+// 	try {
+// 		const myData = new FormData();
+// 		myData.append("chunkData", chunks);
 
-	try {
-		const requests = chunks.map((chunk, index) => {
-			netg.push(chunk)
-			});
+// 		// Issue getting chunks converted to FormData
+// 		chrome.runtime.sendMessage(
+// 			{
+// 				contentScriptQuery: "postData",
+// 				data: myData,
+// 				url: "https://help-me-backend.onrender.com/save-video",
+// 			},
+// 			async function (response) {
+// 				debugger;
+// 				if (response != undefined && response != "") {
+// 					console.log("Response Data:", response);
 
-		const requestData = {
-			chunkData: netg,
-		};
-		console.log("Request Data:", JSON.stringify(requestData));
-		chrome.runtime.sendMessage(
-			{
-				contentScriptQuery: "postData",
-				data: JSON.stringify(requestData),
-				url: "https://help-me-backend.onrender.com/save-video",
-			},
-			async function (response) {
-				debugger;
-				if (response != undefined && response != "") {
-					console.log("Response Data:", response);
+// 					return response;
+// 				} else {
+// 					debugger;
+// 					console.log(null);
+// 				}
+// 			}
+// 		);
+// 	} catch (error) {
+// 		console.error("Error:", error);
+// 		// Handle errors here
+// 		throw error;
+// 	}
+// };
 
-					return response;
-				} else {
-					debugger;
-					console.log(null);
-				}
-			}
-		);
-	} catch (error) {
-		console.error("Error:", error);
-		// Handle errors here
-		throw error;
-	}
+const openExternalLink = () => {
+	const externalLink = "https://help-me-out-web.netlify.app/file/345666";
+	window.open(externalLink, "_blank");
 };
-
 
 async function startCapture(displayMediaOptions) {
 	chrome.storage.sync.get(["enableAudio", "enableWebcam"], async (result) => {
@@ -101,10 +99,10 @@ async function startCapture(displayMediaOptions) {
 			// Get the webcam stream only if it's enabled
 			if (enableWebcam) {
 				webcamStream = await navigator.mediaDevices.getUserMedia(webcam);
+				startWebcam();
 			}
-
-			// Get the audio stream only if it's enabled
 			if (enableAudio) {
+				// Get the audio stream only if it's enabled
 				audioStream = await navigator.mediaDevices.getUserMedia(audio);
 			}
 
@@ -133,8 +131,7 @@ async function startCapture(displayMediaOptions) {
 			recorder.ondataavailable = (e) => chunks.push(e.data);
 
 			recorder.onstop = (e) => {
-				getDataFromLink(chunks);
-
+				// getDataFromLink(chunks);
 				captureStream.getTracks().forEach((track) => track.stop());
 				if (enableAudio) {
 					audioStream.getTracks().forEach((track) => track.stop());
@@ -146,13 +143,12 @@ async function startCapture(displayMediaOptions) {
 				}
 				const elementTwo = document.getElementById("stream-control-container");
 				elementTwo?.remove();
+
+				openExternalLink()
 			};
 
 			// Start the recorder
 			recorder.start();
-			if (enableWebcam) {
-				startWebcam();
-			}
 
 			captureStream.getVideoTracks()[0].addEventListener("ended", () => {
 				stopRecording();
@@ -216,6 +212,7 @@ function createControlButtons() {
 
 	// Create a span to display the timer
 	const timerSpan = document.createElement("span");
+	timerSpan.setAttribute("id", "hmo_timer");
 	timerSpan.style.color = "white";
 	timerSpan.style.marginRight = "3px";
 	timerSpan.textContent = "00:00:00"; // Initial timer value
@@ -245,11 +242,11 @@ function createControlButtons() {
 			(seconds < 10 ? "0" : "") +
 			seconds;
 
-		timerSpan.textContent = formattedTime;
+		const replaceDiv = document.getElementById("hmo_timer");
+		replaceDiv.innerHTML = formattedTime;
 	}
 
-	// Update the timer every second
-	setInterval(updateTimer, 1000);
+		setInterval(updateTimer, 1000);
 
 	// Create a div for the button container
 	const buttonContainerDiv = document.createElement("div");

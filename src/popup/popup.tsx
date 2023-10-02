@@ -15,12 +15,14 @@ import {
 import { useToggle } from "@mantine/hooks";
 import { Monitor, Copy } from "iconsax-react";
 import { IconVideo, IconMicrophone } from "@tabler/icons-react";
+import {usePermission} from 'react-use';
 
 const theme = createTheme({});
 
 const Popup = () => {
 	const [value, toggle] = useToggle(["Fullscreen", "Current"]);
 	const [uploading, setIsUpload] = React.useState(false);
+	
 
 	// Initialize the audio recording preference from Chrome storage
 
@@ -59,22 +61,20 @@ const Popup = () => {
 	const [enableAudio, setEnableAudio] = React.useState(true);
 	const [enableWebcam, setEnableWebcam] = React.useState(true);
 
-	const handleAudioChange = () => {
-		setEnableAudio(!enableAudio);
-	};
-
-	const handleWebcamChange = () => {
-		setEnableWebcam(!enableWebcam);
-	};
-
 	React.useEffect(() => {
 		// Retrieve the enableAudio and enableWebcam preferences from local storage
 		chrome.storage.sync.get(["enableAudio", "enableWebcam"], (result) => {
 			if (result.enableAudio !== undefined) {
 				setEnableAudio(result.enableAudio);
+				if(result.enableAudio === true){
+					const state = usePermission({ name: 'microphone' });
+				}
 			}
 			if (result.enableWebcam !== undefined) {
 				setEnableWebcam(result.enableWebcam);
+				if(result.enableWebcam === true){
+					const state = usePermission({ name: 'camera' });
+				}
 			}
 		});
 	}, []);
@@ -116,7 +116,7 @@ const Popup = () => {
 	};
 
 	const openExternalLink = () => {
-		const externalLink = "https://shalomt.com"; // Replace with your external link
+		const externalLink = "https://help-me-out-web.netlify.app/home";
 		chrome.tabs.create({ url: externalLink });
 	};
 
