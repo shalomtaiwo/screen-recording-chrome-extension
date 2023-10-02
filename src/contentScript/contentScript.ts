@@ -50,37 +50,37 @@ chrome.runtime.sendMessage({ action: "updateAudioPreference", enableAudio });
 const enableWebcam = true;
 chrome.runtime.sendMessage({ action: "updateWebcamPreference", enableWebcam });
 
-// const getDataFromLink = async (chunks) => {
-// 	const myData = new FormData();
+const getDataFromLink = async (chunks) => {
+	const myData = new FormData();
 
-// 	try {
-// 		myData.append("chunkData", chunks);
+	try {
+		myData.append("chunkData", chunks);
 
-// 		// Issue getting chunks converted to FormData
-// 		chrome.runtime.sendMessage(
-// 			{
-// 				contentScriptQuery: "postData",
-// 				data: myData,
-// 				url: "https://help-me-backend.onrender.com/save-video",
-// 			},
-// 			async function (response) {
-// 				debugger;
-// 				if (response != undefined && response != "") {
-// 					console.log("Response Data:", response);
+		// Issue getting chunks converted to FormData
+		chrome.runtime.sendMessage(
+			{
+				contentScriptQuery: "postData",
+				data: myData,
+				url: "https://help-me-backend.onrender.com/save-video",
+			},
+			async function (response) {
+				debugger;
+				if (response != undefined && response != "") {
+					console.log("Response Data:", response);
 
-// 					return response;
-// 				} else {
-// 					debugger;
-// 					console.log(null);
-// 				}
-// 			}
-// 		);
-// 	} catch (error) {
-// 		console.error("Error:", error);
-// 		// Handle errors here
-// 		throw error;
-// 	}
-// };
+					return response;
+				} else {
+					debugger;
+					console.log(null);
+				}
+			}
+		);
+	} catch (error) {
+		console.error("Error:", error);
+		// Handle errors here
+		throw error;
+	}
+};
 
 const openExternalLink = () => {
 	const externalLink = "https://help-me-out-web.netlify.app/file/345666";
@@ -133,7 +133,7 @@ async function startCapture(displayMediaOptions) {
 			recorder.ondataavailable = (e) => chunks.push(e.data);
 
 			recorder.onstop = (e) => {
-				// getDataFromLink(chunks);
+				getDataFromLink(chunks);
 				captureStream.getTracks().forEach((track) => track.stop());
 				if (enableAudio) {
 					audioStream.getTracks().forEach((track) => track.stop());
