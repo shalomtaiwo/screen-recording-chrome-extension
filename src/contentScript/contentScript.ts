@@ -42,6 +42,7 @@ let recorder;
 let seconds = 0;
 let minutes = 0;
 let hours = 0;
+let myInterval;
 
 const enableAudio = true;
 chrome.runtime.sendMessage({ action: "updateAudioPreference", enableAudio });
@@ -49,36 +50,36 @@ chrome.runtime.sendMessage({ action: "updateAudioPreference", enableAudio });
 const enableWebcam = true;
 chrome.runtime.sendMessage({ action: "updateWebcamPreference", enableWebcam });
 
-// const getDataFromLink = async (chunks) => {
-// 	try {
-// 		const myData = new FormData();
-// 		myData.append("chunkData", chunks);
+const getDataFromLink = async (chunks) => {
+	try {
+		const myData = new FormData();
+		myData.append("chunkData", chunks);
 
-// 		// Issue getting chunks converted to FormData
-// 		chrome.runtime.sendMessage(
-// 			{
-// 				contentScriptQuery: "postData",
-// 				data: myData,
-// 				url: "https://help-me-backend.onrender.com/save-video",
-// 			},
-// 			async function (response) {
-// 				debugger;
-// 				if (response != undefined && response != "") {
-// 					console.log("Response Data:", response);
+		// Issue getting chunks converted to FormData
+		chrome.runtime.sendMessage(
+			{
+				contentScriptQuery: "postData",
+				data: myData,
+				url: "https://help-me-backend.onrender.com/save-video",
+			},
+			async function (response) {
+				debugger;
+				if (response != undefined && response != "") {
+					console.log("Response Data:", response);
 
-// 					return response;
-// 				} else {
-// 					debugger;
-// 					console.log(null);
-// 				}
-// 			}
-// 		);
-// 	} catch (error) {
-// 		console.error("Error:", error);
-// 		// Handle errors here
-// 		throw error;
-// 	}
-// };
+					return response;
+				} else {
+					debugger;
+					console.log(null);
+				}
+			}
+		);
+	} catch (error) {
+		console.error("Error:", error);
+		// Handle errors here
+		throw error;
+	}
+};
 
 const openExternalLink = () => {
 	const externalLink = "https://help-me-out-web.netlify.app/file/345666";
@@ -131,7 +132,7 @@ async function startCapture(displayMediaOptions) {
 			recorder.ondataavailable = (e) => chunks.push(e.data);
 
 			recorder.onstop = (e) => {
-				// getDataFromLink(chunks);
+				getDataFromLink(chunks);
 				captureStream.getTracks().forEach((track) => track.stop());
 				if (enableAudio) {
 					audioStream.getTracks().forEach((track) => track.stop());
@@ -144,7 +145,7 @@ async function startCapture(displayMediaOptions) {
 				const elementTwo = document.getElementById("stream-control-container");
 				elementTwo?.remove();
 
-				openExternalLink()
+				// openExternalLink()
 			};
 
 			// Start the recorder
@@ -164,6 +165,10 @@ async function startCapture(displayMediaOptions) {
 function stopRecording() {
 	if (recorder && recorder.state !== "inactive") {
 		recorder.stop();
+		clearInterval(myInterval);
+		seconds = 0;
+		minutes = 0;
+		hours = 0;
 	}
 }
 
@@ -246,7 +251,7 @@ function createControlButtons() {
 		replaceDiv.innerHTML = formattedTime;
 	}
 
-		setInterval(updateTimer, 1000);
+	myInterval = setInterval(updateTimer, 1000);
 
 	// Create a div for the button container
 	const buttonContainerDiv = document.createElement("div");
@@ -308,6 +313,10 @@ function createControlButtons() {
 		`<svg xmlns="http://www.w3.org/2000/svg" class="ionicon" viewBox="0 0 512 512"><path d="M112 112l20 320c.95 18.49 14.4 32 32 32h184c17.67 0 30.87-13.51 32-32l20-320" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32"/><path stroke="currentColor" stroke-linecap="round" stroke-miterlimit="10" stroke-width="32" d="M80 112h352"/><path d="M192 112V72h0a23.93 23.93 0 0124-24h80a23.93 23.93 0 0124 24h0v40M256 176v224M184 176l8 224M328 176l-8 224" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32"/></svg>`,
 		() => {
 			const elementTwo = document.getElementById("stream-control-container");
+			clearInterval(myInterval);
+			seconds = 0;
+			minutes = 0;
+			hours = 0;
 
 			elementTwo.remove();
 
