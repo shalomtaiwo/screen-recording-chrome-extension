@@ -50,36 +50,37 @@ chrome.runtime.sendMessage({ action: "updateAudioPreference", enableAudio });
 const enableWebcam = true;
 chrome.runtime.sendMessage({ action: "updateWebcamPreference", enableWebcam });
 
-const getDataFromLink = async (chunks) => {
-	try {
-		const myData = new FormData();
-		myData.append("chunkData", chunks);
+// const getDataFromLink = async (chunks) => {
+// 	const myData = new FormData();
 
-		// Issue getting chunks converted to FormData
-		chrome.runtime.sendMessage(
-			{
-				contentScriptQuery: "postData",
-				data: myData,
-				url: "https://help-me-backend.onrender.com/save-video",
-			},
-			async function (response) {
-				debugger;
-				if (response != undefined && response != "") {
-					console.log("Response Data:", response);
+// 	try {
+// 		myData.append("chunkData", chunks);
 
-					return response;
-				} else {
-					debugger;
-					console.log(null);
-				}
-			}
-		);
-	} catch (error) {
-		console.error("Error:", error);
-		// Handle errors here
-		throw error;
-	}
-};
+// 		// Issue getting chunks converted to FormData
+// 		chrome.runtime.sendMessage(
+// 			{
+// 				contentScriptQuery: "postData",
+// 				data: myData,
+// 				url: "https://help-me-backend.onrender.com/save-video",
+// 			},
+// 			async function (response) {
+// 				debugger;
+// 				if (response != undefined && response != "") {
+// 					console.log("Response Data:", response);
+
+// 					return response;
+// 				} else {
+// 					debugger;
+// 					console.log(null);
+// 				}
+// 			}
+// 		);
+// 	} catch (error) {
+// 		console.error("Error:", error);
+// 		// Handle errors here
+// 		throw error;
+// 	}
+// };
 
 const openExternalLink = () => {
 	const externalLink = "https://help-me-out-web.netlify.app/file/345666";
@@ -132,7 +133,7 @@ async function startCapture(displayMediaOptions) {
 			recorder.ondataavailable = (e) => chunks.push(e.data);
 
 			recorder.onstop = (e) => {
-				getDataFromLink(chunks);
+				// getDataFromLink(chunks);
 				captureStream.getTracks().forEach((track) => track.stop());
 				if (enableAudio) {
 					audioStream.getTracks().forEach((track) => track.stop());
@@ -145,7 +146,7 @@ async function startCapture(displayMediaOptions) {
 				const elementTwo = document.getElementById("stream-control-container");
 				elementTwo?.remove();
 
-				// openExternalLink()
+				openExternalLink()
 			};
 
 			// Start the recorder
@@ -189,7 +190,7 @@ async function startWebcam() {
 			videoElement.style.position = "fixed";
 			videoElement.style.bottom = "10px";
 			videoElement.style.left = "10px";
-			videoElement.style.zIndex = "9999";
+			videoElement.style.zIndex = "99999999";
 			videoElement.style.objectFit = "cover";
 			videoElement.style.objectPosition = "center";
 
@@ -360,7 +361,7 @@ function createControlButtons() {
 	controlContainer.style.justifyContent = "space-between";
 	controlContainer.style.alignItems = "center";
 	controlContainer.style.padding = "0 15px";
-	controlContainer.style.zIndex = "9999";
+	controlContainer.style.zIndex = "99999999";
 	controlContainer.appendChild(timerDiv);
 	controlContainer.appendChild(buttonContainerDiv);
 

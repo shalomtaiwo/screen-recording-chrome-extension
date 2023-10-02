@@ -43,7 +43,7 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
 			method: "POST",
 			headers: {
 				Accept: "*/*",
-				"Content-Type": "Multipart/form-data"
+				"Content-Type": "multipart/form-data; boundary=<calculated when request is sent>"
 			},
 			body: request.data,
 		})
